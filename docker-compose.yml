@@ -1,0 +1,40 @@
+services:
+  php:
+    build: .
+    container_name: php_app
+    ports: 
+      - "8069:80"
+    
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - network6
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mariadb:10.4
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'userpass'
+      MYSQL_DATABASE: 'mydatabase'
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
+    networks:
+      - network6
+    ports: 
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entry-initdb.d/init.sql
+
+#bind from project to folder inside of container
+volumes:
+  mysql_data:
+    name: mysql_data
+
+networks:
+  network6:
+    name: network6
+    driver: bridge
